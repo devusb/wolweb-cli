@@ -21,15 +21,18 @@ var rootCmd = &cobra.Command{
 }
 
 var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List available devices",
-	Run:   listDevices,
+	Use:     "list",
+	Aliases: []string{"l"},
+	Short:   "List available devices",
+	Run:     listDevices,
 }
 
 var wakeCmd = &cobra.Command{
-	Use:   "wake",
-	Short: "Wake device",
-	Run:   wakeDevice,
+	Use:     "wake [device]",
+	Aliases: []string{"w"},
+	Short:   "Wake device",
+	Long:    "Wake device matching name from [list]",
+	Run:     wakeDevice,
 }
 
 func init() {
@@ -43,7 +46,7 @@ func setupConfig() {
 	viper.SetConfigType("yaml")
 
 	viper.AddConfigPath("$HOME/.config")
-	
+
 	err := viper.ReadInConfig()
 
 	if err != nil {
@@ -60,7 +63,7 @@ func listDevices(cmd *cobra.Command, args []string) {
 	}
 
 	lw := list.NewWriter()
-	for _, v := range(hosts) {
+	for _, v := range hosts {
 		lw.AppendItem(fmt.Sprintf("%s: %s", v.Name, v.Mac))
 	}
 
