@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/kr/pretty"
+	"github.com/jedib0t/go-pretty/v6/list"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -59,7 +59,13 @@ func listDevices(cmd *cobra.Command, args []string) {
 		log.Fatalf("failed to get hosts: %s", err)
 	}
 
-	pretty.Print(hosts)
+	lw := list.NewWriter()
+	for _, v := range(hosts) {
+		lw.AppendItem(fmt.Sprintf("%s: %s", v.Name, v.Mac))
+	}
+
+	fmt.Println("Devices:")
+	fmt.Println(lw.Render())
 }
 
 func getDevices() ([]Device, error) {
@@ -81,7 +87,9 @@ func getDevices() ([]Device, error) {
 }
 
 func wakeDevice(cmd *cobra.Command, args []string) {
-	resp, err := http.Get(fmt.Sprintf("%s/wolweb/wake/%s", server, args[0]))
+	target := args[0]
+
+	resp, err := http.Get(fmt.Sprintf("%s/wolweb/wake/%s", server, target))
 	if err != nil {
 		log.Fatalf("Failed to wake device: %s", err)
 	}
@@ -96,10 +104,10 @@ func wakeDevice(cmd *cobra.Command, args []string) {
 	json.Unmarshal(body, &response)
 
 	if !response.Success {
-		log.Fatalf("Failed to wake device: %t", err)
+		log.Fatalf("Failed to wake device")
 	}
 
-	pretty.Print(response)
+	fmt.Println(response.Message)
 }
 
 func main() {
