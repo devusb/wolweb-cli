@@ -16,7 +16,7 @@ var server string
 
 var rootCmd = &cobra.Command{
 	Use:   "wolweb-cli",
-	Short: "A command line interface to trigger devices with wolweb",
+	Short: "A command line interface to wake devices with wolweb",
 }
 
 var listCmd = &cobra.Command{
