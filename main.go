@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
@@ -50,7 +49,8 @@ func setupConfig() {
 	err := viper.ReadInConfig()
 
 	if err != nil {
-		log.Fatalf("Failure reading config: %s", err)
+		fmt.Printf("Failure reading config: %s\n", err)
+		os.Exit(1)
 	}
 
 	server = viper.GetString("server")
@@ -59,7 +59,8 @@ func setupConfig() {
 func listDevices(cmd *cobra.Command, args []string) {
 	hosts, err := getDevices()
 	if err != nil {
-		log.Fatalf("failed to get hosts: %s", err)
+		fmt.Printf("failed to get hosts: %s\n", err)
+		os.Exit(1)
 	}
 
 	lw := list.NewWriter()
@@ -94,20 +95,23 @@ func wakeDevice(cmd *cobra.Command, args []string) {
 
 	resp, err := http.Get(fmt.Sprintf("%s/wolweb/wake/%s", server, target))
 	if err != nil {
-		log.Fatalf("Failed to wake device: %s", err)
+		fmt.Printf("Failed to wake device: %s\n", err)
+		os.Exit(1)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Failed to wake device: %s", err)
+		fmt.Printf("Failed to wake device: %s\n", err)
+		os.Exit(1)
 	}
 
 	response := HTTPResponseObject{}
 	json.Unmarshal(body, &response)
 
 	if !response.Success {
-		log.Fatalf("Failed to wake device")
+		fmt.Printf("Failed to wake device: %s\n", response.Message)
+		os.Exit(1)
 	}
 
 	fmt.Println(response.Message)
