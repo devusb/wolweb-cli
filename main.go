@@ -28,6 +28,7 @@ var listCmd = &cobra.Command{
 
 var wakeCmd = &cobra.Command{
 	Use:     "wake [device]",
+	Args:    cobra.ExactArgs(1),
 	Aliases: []string{"w"},
 	Short:   "Wake device",
 	Long:    "Wake device matching name from [list]",
